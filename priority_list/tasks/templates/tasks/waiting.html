@@ -36,7 +36,7 @@
                 method: 'POST',
                 headers: {'X-CSRFToken': getCsrfToken()},
                 body: formData,
-            });
+            }).catch(console.error);
         },
     });
 </script>

@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.db.models import Max
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -55,8 +56,9 @@ def task_delete(request, pk):
 
 @require_POST
 def task_reorder(request):
-    for i, pk in enumerate(request.POST.getlist('ids')):
-        Task.objects.filter(pk=int(pk)).update(order=i)
+    with transaction.atomic():
+        for i, pk in enumerate(request.POST.getlist('ids')):
+            Task.objects.filter(pk=int(pk)).update(order=i)
     return HttpResponse('')
 
 
@@ -108,6 +110,7 @@ def waiting_delete(request, pk):
 
 @require_POST
 def waiting_reorder(request):
-    for i, pk in enumerate(request.POST.getlist('ids')):
-        WaitingTask.objects.filter(pk=int(pk)).update(order=i)
+    with transaction.atomic():
+        for i, pk in enumerate(request.POST.getlist('ids')):
+            WaitingTask.objects.filter(pk=int(pk)).update(order=i)
     return HttpResponse('')
