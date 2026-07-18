@@ -75,3 +75,65 @@ class TaskViewTest(TestCase):
         self.task.refresh_from_db()
         self.assertEqual(t2.order, 0)
         self.assertEqual(self.task.order, 1)
+
+
+class WaitingTaskViewTest(TestCase):
+    def setUp(self):
+        self.client = Client(enforce_csrf_checks=False)
+        self.task = WaitingTask.objects.create(project='P1', reason='R1', order=0)
+
+    def test_waiting_index_returns_200_with_task(self):
+        response = self.client.get(reverse('waiting_index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'P1')
+
+    def test_waiting_add_form_returns_partial(self):
+        response = self.client.get(reverse('waiting_add_form'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'waiting-add-row')
+
+    def test_waiting_row_returns_partial(self):
+        response = self.client.get(reverse('waiting_row', args=[self.task.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'P1')
+
+    def test_waiting_edit_form_returns_partial_with_values(self):
+        response = self.client.get(reverse('waiting_edit_form', args=[self.task.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'P1')
+
+    def test_add_waiting_task_creates_and_returns_row(self):
+        response = self.client.post(
+            reverse('waiting_add'), {'project': 'P2', 'reason': 'R2'}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(WaitingTask.objects.count(), 2)
+        self.assertContains(response, 'P2')
+
+    def test_edit_waiting_task_updates_and_returns_row(self):
+        response = self.client.post(
+            reverse('waiting_edit', args=[self.task.pk]),
+            {'project': 'Updated', 'reason': 'R1'},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.task.refresh_from_db()
+        self.assertEqual(self.task.project, 'Updated')
+        self.assertContains(response, 'Updated')
+
+    def test_delete_waiting_task_removes_it(self):
+        response = self.client.post(reverse('waiting_delete', args=[self.task.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'')
+        self.assertEqual(WaitingTask.objects.count(), 0)
+
+    def test_reorder_waiting_tasks_updates_order(self):
+        t2 = WaitingTask.objects.create(project='P2', reason='R2', order=1)
+        response = self.client.post(
+            reverse('waiting_reorder'),
+            {'ids': [t2.pk, self.task.pk]},
+        )
+        self.assertEqual(response.status_code, 200)
+        t2.refresh_from_db()
+        self.task.refresh_from_db()
+        self.assertEqual(t2.order, 0)
+        self.assertEqual(self.task.order, 1)
