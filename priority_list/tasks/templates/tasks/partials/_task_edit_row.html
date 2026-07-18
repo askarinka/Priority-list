@@ -1,1 +1,13 @@
-<tr data-id="{{ task.id }}"><td>{{ task.project }}</td><td>{{ task.description }}</td><td></td></tr>
+<tr data-id="{{ task.id }}">
+    <td><textarea name="project">{{ task.project }}</textarea></td>
+    <td><textarea name="description">{{ task.description }}</textarea></td>
+    <td class="actions">
+        <button hx-post="{% url 'task_edit' task.id %}"
+                hx-include="closest tr"
+                hx-target="closest tr"
+                hx-swap="outerHTML">✓</button>
+        <button hx-get="{% url 'task_row' task.id %}"
+                hx-target="closest tr"
+                hx-swap="outerHTML">✗</button>
+    </td>
+</tr>

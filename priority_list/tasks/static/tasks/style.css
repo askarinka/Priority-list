@@ -1,0 +1,112 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #ac7e59;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.toolbar button,
+.toolbar a.btn {
+    padding: 8px 18px;
+    background: #473424;
+    color: #ddd;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.toolbar button:hover,
+.toolbar a.btn:hover {
+    background: #5a4030;
+}
+
+.task-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.task-table thead th {
+    background: #473424;
+    color: #ddd;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    text-align: left;
+}
+
+.task-table thead th:first-child { border-radius: 10px 0 0 10px; }
+.task-table thead th:last-child  { border-radius: 0 10px 10px 0; }
+
+.task-table tbody td {
+    background: #705138;
+    color: #ddd;
+    padding: 10px 14px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+}
+
+.task-table tbody td:first-child {
+    width: 20%;
+    border-radius: 20px 0 0 20px;
+}
+
+.task-table tbody td:nth-child(2) {
+    width: 70%;
+    min-height: 60px;
+}
+
+.task-table tbody td.actions {
+    width: 10%;
+    text-align: center;
+    background: #8d6646;
+    border-radius: 20px;
+}
+
+.task-table tbody tr { cursor: grab; }
+.task-table tbody tr:active { cursor: grabbing; }
+
+textarea {
+    width: 100%;
+    background: transparent;
+    color: #ddd;
+    border: none;
+    outline: none;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    resize: none;
+    min-height: 40px;
+}
+
+button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+button:hover  { background: rgba(255, 255, 255, 0.15); }
+button:focus  { outline: 2px solid #8bc5a5; }

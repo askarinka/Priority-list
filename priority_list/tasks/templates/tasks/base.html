@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PrioList{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'tasks/style.css' %}">
+    <script src="https://unpkg.com/htmx.org@2.0.3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
+</head>
+<body>
+    {% block content %}{% endblock %}
+    <script>
+        document.addEventListener('htmx:configRequest', function (e) {
+            e.detail.headers['X-CSRFToken'] =
+                document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
+        });
+
+        function getCsrfToken() {
+            return document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
+        }
+    </script>
+</body>
+</html>

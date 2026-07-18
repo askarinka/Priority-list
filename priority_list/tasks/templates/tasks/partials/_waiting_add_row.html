@@ -1,1 +1,11 @@
-<tr id="waiting-add-row"><td></td><td></td><td></td></tr>
+<tr id="waiting-add-row">
+    <td><textarea name="project" placeholder="Проект"></textarea></td>
+    <td><textarea name="reason" placeholder="Причина ожидания"></textarea></td>
+    <td class="actions">
+        <button hx-post="{% url 'waiting_add' %}"
+                hx-include="#waiting-add-row"
+                hx-target="#waiting-add-row"
+                hx-swap="outerHTML">✓</button>
+        <button type="button" onclick="this.closest('tr').remove()">✗</button>
+    </td>
+</tr>

@@ -1,1 +1,43 @@
-{% for task in tasks %}{{ task.project }}{% endfor %}
+{% extends 'tasks/base.html' %}
+{% block title %}Ожидание{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="toolbar">
+        <button hx-get="{% url 'waiting_add_form' %}"
+                hx-target="#waiting-tbody"
+                hx-swap="beforeend">+ Добавить</button>
+        <a href="{% url 'index' %}" class="btn">← Назад</a>
+    </div>
+    <table class="task-table">
+        <thead>
+            <tr>
+                <th>Проект</th>
+                <th>Причина ожидания</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="waiting-tbody">
+            {% for task in tasks %}
+                {% include 'tasks/partials/_waiting_row.html' %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    Sortable.create(document.getElementById('waiting-tbody'), {
+        animation: 150,
+        filter: 'input, textarea, button',
+        preventOnFilter: false,
+        onEnd: function () {
+            const rows = document.querySelectorAll('#waiting-tbody tr[data-id]');
+            const formData = new FormData();
+            rows.forEach(row => formData.append('ids', row.dataset.id));
+            fetch("{% url 'waiting_reorder' %}", {
+                method: 'POST',
+                headers: {'X-CSRFToken': getCsrfToken()},
+                body: formData,
+            });
+        },
+    });
+</script>
+{% endblock %}

@@ -1,1 +1,11 @@
-<tr id="task-add-row"><td></td><td></td><td></td></tr>
+<tr id="task-add-row">
+    <td><textarea name="project" placeholder="Проект"></textarea></td>
+    <td><textarea name="description" placeholder="Описание задачи"></textarea></td>
+    <td class="actions">
+        <button hx-post="{% url 'task_add' %}"
+                hx-include="#task-add-row"
+                hx-target="#task-add-row"
+                hx-swap="outerHTML">✓</button>
+        <button type="button" onclick="this.closest('tr').remove()">✗</button>
+    </td>
+</tr>
