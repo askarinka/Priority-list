@@ -15,3 +15,63 @@ class TaskModelTest(TestCase):
         self.assertEqual(WaitingTask.objects.count(), 1)
         self.assertIsNone(task.external_id)
         self.assertIsNone(task.tracker_url)
+
+
+class TaskViewTest(TestCase):
+    def setUp(self):
+        self.client = Client(enforce_csrf_checks=False)
+        self.task = Task.objects.create(project='P1', description='D1', order=0)
+
+    def test_index_returns_200_with_task(self):
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'P1')
+
+    def test_task_add_form_returns_partial(self):
+        response = self.client.get(reverse('task_add_form'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'task-add-row')
+
+    def test_task_row_returns_partial(self):
+        response = self.client.get(reverse('task_row', args=[self.task.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'P1')
+
+    def test_task_edit_form_returns_partial_with_values(self):
+        response = self.client.get(reverse('task_edit_form', args=[self.task.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'P1')
+
+    def test_add_task_creates_and_returns_row(self):
+        response = self.client.post(reverse('task_add'), {'project': 'P2', 'description': 'D2'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Task.objects.count(), 2)
+        self.assertContains(response, 'P2')
+
+    def test_edit_task_updates_and_returns_row(self):
+        response = self.client.post(
+            reverse('task_edit', args=[self.task.pk]),
+            {'project': 'Updated', 'description': 'D1'},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.task.refresh_from_db()
+        self.assertEqual(self.task.project, 'Updated')
+        self.assertContains(response, 'Updated')
+
+    def test_delete_task_removes_it(self):
+        response = self.client.post(reverse('task_delete', args=[self.task.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'')
+        self.assertEqual(Task.objects.count(), 0)
+
+    def test_reorder_tasks_updates_order(self):
+        t2 = Task.objects.create(project='P2', description='D2', order=1)
+        response = self.client.post(
+            reverse('task_reorder'),
+            {'ids': [t2.pk, self.task.pk]},
+        )
+        self.assertEqual(response.status_code, 200)
+        t2.refresh_from_db()
+        self.task.refresh_from_db()
+        self.assertEqual(t2.order, 0)
+        self.assertEqual(self.task.order, 1)
