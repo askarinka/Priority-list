@@ -122,9 +122,6 @@ body {
     opacity: 0.5;
 }
 
-.task-card.task-dimmed .actions button:last-child {
-    pointer-events: none;
-}
 
 .project-name {
     font-size: 14px;
