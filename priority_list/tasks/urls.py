@@ -10,4 +10,5 @@ urlpatterns = [
     path('task/<int:pk>/edit/', views.task_edit, name='task_edit'),
     path('task/<int:pk>/delete/', views.task_delete, name='task_delete'),
     path('reorder/', views.task_reorder, name='task_reorder'),
+    path('import/outlook/', views.outlook_import, name='outlook_import'),
 ]

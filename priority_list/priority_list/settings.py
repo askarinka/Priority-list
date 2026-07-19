@@ -1,6 +1,15 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+_env_file = BASE_DIR.parent / '.env'
+if _env_file.exists():
+    for _line in _env_file.read_text().splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith('#') and '=' in _line:
+            _k, _, _v = _line.partition('=')
+            os.environ.setdefault(_k.strip(), _v.strip())
 SECRET_KEY = 'django-insecure-priority-list-local-only'
 DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -15,6 +24,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
+
+OUTLOOK_ICS_URL = os.environ.get('OUTLOOK_ICS_URL', '')
 
 ROOT_URLCONF = 'priority_list.urls'
 

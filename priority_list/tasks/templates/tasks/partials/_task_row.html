@@ -1,12 +1,32 @@
-<div class="task-card" data-id="{{ task.id }}" data-project="{{ task.project }}" data-hours="{{ task.duration_hours }}" data-minutes="{{ task.duration_minutes }}">
+<div class="task-card" data-id="{{ task.id }}" data-project="{{ task.project }}"
+     data-hours="{{ task.effective_hours }}" data-minutes="{{ task.effective_minutes }}"
+     hx-get="{% url 'task_edit_form' task.id %}"
+     hx-trigger="dblclick"
+     hx-target="closest .task-card"
+     hx-swap="outerHTML">
     <span class="project-name">{{ task.project }}</span>
     <span class="description">{{ task.description }}</span>
-    <span class="duration-cell">{{ task.duration_hours }}ч {{ task.duration_minutes }}м</span>
-    <div class="actions">
+    <span class="status-cell">
+        {% if task.status == 'active' %}
+        <span class="status-badge badge-active">Доступна</span>
+        {% elif task.status == 'blocked_this_week' %}
+        <span class="status-badge badge-blocked-week">эта нед.</span>
+        {% elif task.status == 'blocked_not_this_week' %}
+        <span class="status-badge badge-blocked-later">не эта нед.</span>
+        {% endif %}
+    </span>
+    <span class="block-reason-cell">{{ task.block_reason }}</span>
+    <div class="time-cell">
+        <span class="time-effective">{{ task.effective_hours }}ч {{ task.effective_minutes }}м</span>
+        {% if task.spent_hours or task.spent_minutes %}
+        <span class="time-spent">-{{ task.spent_hours }}ч {{ task.spent_minutes }}м</span>
+        {% endif %}
+    </div>
+    <div class="actions" ondblclick="event.stopPropagation()">
         <button hx-post="{% url 'task_delete' task.id %}"
                 hx-target="closest .task-card"
                 hx-swap="outerHTML"
-                hx-confirm="Закрыть проект?">✓</button>
+                hx-confirm="Закрыть задачу?">✓</button>
         <button hx-get="{% url 'task_edit_form' task.id %}"
                 hx-target="closest .task-card"
                 hx-swap="outerHTML">✎</button>

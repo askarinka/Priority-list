@@ -1,9 +1,25 @@
 <div class="task-card" id="task-add-row" data-hours="0" data-minutes="0">
-    <div><textarea name="project" placeholder="Проект"></textarea></div>
-    <div><textarea name="description" placeholder="Описание задачи"></textarea></div>
-    <div class="duration-cell">
-        <input type="number" name="duration_hours" value="0" min="0"> ч
-        <input type="number" name="duration_minutes" value="0" min="0"> м
+    <div><textarea name="project" placeholder="Источник"></textarea></div>
+    <div><textarea name="description" placeholder="Задача"></textarea></div>
+    <div>
+        <select name="status">
+            <option value="active">Доступна</option>
+            <option value="blocked_this_week">Блок. эта нед.</option>
+            <option value="blocked_not_this_week">Блок. не эта нед.</option>
+        </select>
+    </div>
+    <div><textarea name="block_reason" placeholder="Причина блокировки"></textarea></div>
+    <div class="time-inputs-group">
+        <div class="time-inputs-row">
+            <span>Зап.</span>
+            <input type="number" name="duration_hours" value="0" min="0">ч
+            <input type="number" name="duration_minutes" value="0" min="0">м
+        </div>
+        <div class="time-inputs-row">
+            <span>Пот.</span>
+            <input type="number" name="spent_hours" value="0" min="0">ч
+            <input type="number" name="spent_minutes" value="0" min="0">м
+        </div>
     </div>
     <div class="actions">
         <button hx-post="{% url 'task_add' %}"

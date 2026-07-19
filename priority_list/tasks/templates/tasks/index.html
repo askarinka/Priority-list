@@ -6,11 +6,21 @@
         <button hx-get="{% url 'task_add_form' %}"
                 hx-target="#task-list"
                 hx-swap="beforeend">+ Добавить</button>
-<button id="theme-btn" class="btn-secondary theme-toggle" onclick="toggleTheme()">☀ Светлая</button>
+        <button class="btn-secondary"
+                hx-post="{% url 'outlook_import' %}"
+                hx-indicator="this">📅 Из Outlook</button>
+        <button id="theme-btn" class="btn-secondary theme-toggle" onclick="toggleTheme()">☀ Светлая</button>
+    </div>
+    <div class="filter-tabs">
+        <a href="?filter=all" class="filter-tab {% if filter == 'all' %}active{% endif %}">Все</a>
+        <a href="?filter=active" class="filter-tab {% if filter == 'active' %}active{% endif %}">Активные</a>
+        <a href="?filter=blocked" class="filter-tab {% if filter == 'blocked' %}active{% endif %}">Заблокированные</a>
     </div>
     <div class="task-list-header">
-        <span>Проект</span>
-        <span>Описание задачи</span>
+        <span>Источник</span>
+        <span>Задача</span>
+        <span>Статус</span>
+        <span>Блокеры</span>
         <span>Время</span>
         <span></span>
     </div>
@@ -64,7 +74,7 @@
 
     Sortable.create(document.getElementById('task-list'), {
         animation: 150,
-        filter: 'input, textarea, button',
+        filter: 'input, textarea, button, select',
         preventOnFilter: false,
         onEnd: function () {
             const cards = document.querySelectorAll('#task-list .task-card[data-id]');

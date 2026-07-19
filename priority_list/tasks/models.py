@@ -6,7 +6,7 @@ class Task(models.Model):
     STATUS_BLOCKED_THIS_WEEK = 'blocked_this_week'
     STATUS_BLOCKED_NOT_THIS_WEEK = 'blocked_not_this_week'
     STATUS_CHOICES = [
-        (STATUS_ACTIVE, 'Активна'),
+        (STATUS_ACTIVE, 'Доступна'),
         (STATUS_BLOCKED_THIS_WEEK, 'Заблокирована, эта неделя'),
         (STATUS_BLOCKED_NOT_THIS_WEEK, 'Заблокирована, не эта неделя'),
     ]

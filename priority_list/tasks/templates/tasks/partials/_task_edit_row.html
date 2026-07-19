@@ -1,9 +1,26 @@
-<div class="task-card" data-id="{{ task.id }}" data-project="{{ task.project }}" data-hours="{{ task.duration_hours }}" data-minutes="{{ task.duration_minutes }}">
+<div class="task-card" data-id="{{ task.id }}" data-project="{{ task.project }}"
+     data-hours="{{ task.effective_hours }}" data-minutes="{{ task.effective_minutes }}">
     <div><textarea name="project">{{ task.project }}</textarea></div>
     <div><textarea name="description">{{ task.description }}</textarea></div>
-    <div class="duration-cell">
-        <input type="number" name="duration_hours" value="{{ task.duration_hours }}" min="0"> ч
-        <input type="number" name="duration_minutes" value="{{ task.duration_minutes }}" min="0"> м
+    <div>
+        <select name="status">
+            <option value="active" {% if task.status == 'active' %}selected{% endif %}>Доступна</option>
+            <option value="blocked_this_week" {% if task.status == 'blocked_this_week' %}selected{% endif %}>Блок. эта нед.</option>
+            <option value="blocked_not_this_week" {% if task.status == 'blocked_not_this_week' %}selected{% endif %}>Блок. не эта нед.</option>
+        </select>
+    </div>
+    <div><textarea name="block_reason" placeholder="Причина блокировки">{{ task.block_reason }}</textarea></div>
+    <div class="time-inputs-group">
+        <div class="time-inputs-row">
+            <span>Зап.</span>
+            <input type="number" name="duration_hours" value="{{ task.duration_hours }}" min="0">ч
+            <input type="number" name="duration_minutes" value="{{ task.duration_minutes }}" min="0">м
+        </div>
+        <div class="time-inputs-row">
+            <span>Пот.</span>
+            <input type="number" name="spent_hours" value="{{ task.spent_hours }}" min="0">ч
+            <input type="number" name="spent_minutes" value="{{ task.spent_minutes }}" min="0">м
+        </div>
     </div>
     <div class="actions">
         <button hx-post="{% url 'task_edit' task.id %}"

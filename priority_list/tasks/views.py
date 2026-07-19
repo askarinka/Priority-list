@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import transaction
 from django.db.models import Max
 from django.http import HttpResponse
@@ -69,6 +71,80 @@ def task_edit(request, pk):
 def task_delete(request, pk):
     get_object_or_404(Task, pk=pk).delete()
     return HttpResponse('')
+
+
+@require_POST
+def outlook_import(request):
+    from django.conf import settings
+    import requests as http
+    import icalendar
+
+    ics_url = settings.OUTLOOK_ICS_URL
+    if not ics_url:
+        return HttpResponse('Добавьте OUTLOOK_ICS_URL в .env', status=500)
+
+    try:
+        resp = http.get(ics_url, timeout=15)
+        resp.raise_for_status()
+    except Exception as e:
+        return HttpResponse(f'Ошибка загрузки календаря: {e}', status=500)
+
+    try:
+        cal = icalendar.Calendar.from_ical(resp.content)
+    except Exception as e:
+        return HttpResponse(f'Ошибка разбора ICS: {e}', status=500)
+
+    today = datetime.date.today()
+    monday = today - datetime.timedelta(days=today.weekday())
+    sunday = monday + datetime.timedelta(days=6)
+
+    max_order = Task.objects.aggregate(Max('order'))['order__max'] or 0
+    for component in cal.walk():
+        if component.name != 'VEVENT':
+            continue
+        status = str(component.get('STATUS', '')).upper()
+        if status == 'CANCELLED':
+            continue
+        transp = str(component.get('TRANSP', '')).upper()
+        if transp == 'TRANSPARENT':
+            continue
+
+        dtstart = component.get('DTSTART')
+        dtend = component.get('DTEND')
+        if not dtstart or not dtend:
+            continue
+
+        start = dtstart.dt
+        end = dtend.dt
+
+        # skip all-day events (date, not datetime)
+        if not isinstance(start, datetime.datetime):
+            continue
+
+        start_date = start.date() if hasattr(start, 'date') else start
+        if not (monday <= start_date <= sunday):
+            continue
+
+        uid = str(component.get('UID', ''))
+        if uid and Task.objects.filter(external_id=uid).exists():
+            continue
+
+        total_minutes = max(0, int((end - start).total_seconds() // 60))
+        subject = str(component.get('SUMMARY', 'Без названия'))
+        max_order += 1
+        Task.objects.create(
+            project='Встреча',
+            description=subject,
+            order=max_order,
+            external_id=uid or None,
+            duration_hours=total_minutes // 60,
+            duration_minutes=total_minutes % 60,
+            status='active',
+        )
+
+    response = HttpResponse('')
+    response['HX-Redirect'] = '/'
+    return response
 
 
 @require_POST
