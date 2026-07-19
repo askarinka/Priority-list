@@ -1,6 +1,10 @@
 <tr data-id="{{ task.id }}">
     <td><textarea name="project">{{ task.project }}</textarea></td>
     <td><textarea name="reason">{{ task.reason }}</textarea></td>
+    <td class="duration">
+        <input type="number" name="duration_hours" value="{{ task.duration_hours }}" min="0" style="width:3em"> ч
+        <input type="number" name="duration_minutes" value="{{ task.duration_minutes }}" min="0" style="width:3em"> м
+    </td>
     <td class="actions">
         <button hx-post="{% url 'waiting_edit' task.id %}"
                 hx-include="closest tr"

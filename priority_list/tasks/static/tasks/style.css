@@ -72,8 +72,13 @@ body {
 }
 
 .task-table tbody td:nth-child(2) {
-    width: 70%;
+    width: 55%;
     min-height: 60px;
+}
+
+.task-table tbody td.duration {
+    width: 15%;
+    text-align: center;
 }
 
 .task-table tbody td.actions {
@@ -110,3 +115,14 @@ button {
 
 button:hover  { background: rgba(255, 255, 255, 0.15); }
 button:focus  { outline: 2px solid #8bc5a5; }
+
+input[type="number"] {
+    background: transparent;
+    color: #ddd;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 2px 4px;
+    width: 3em;
+}

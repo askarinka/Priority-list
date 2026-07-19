@@ -1,6 +1,7 @@
 <tr data-id="{{ task.id }}">
     <td>{{ task.project }}</td>
     <td>{{ task.reason }}</td>
+    <td class="duration">{{ task.duration_hours }}ч {{ task.duration_minutes }}м</td>
     <td class="actions">
         <button hx-post="{% url 'waiting_delete' task.id %}"
                 hx-target="closest tr"

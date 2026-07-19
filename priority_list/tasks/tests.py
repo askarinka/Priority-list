@@ -106,6 +106,16 @@ class TaskViewTest(TestCase):
         self.assertEqual(self.task.duration_hours, 1)
         self.assertEqual(self.task.duration_minutes, 45)
 
+    def test_task_row_shows_duration(self):
+        task = Task.objects.create(
+            project='P', description='D', order=99,
+            duration_hours=1, duration_minutes=30,
+        )
+        response = self.client.get(reverse('task_row', args=[task.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '1ч')
+        self.assertContains(response, '30м')
+
 
 class WaitingTaskViewTest(TestCase):
     def setUp(self):
@@ -187,3 +197,13 @@ class WaitingTaskViewTest(TestCase):
         self.task.refresh_from_db()
         self.assertEqual(self.task.duration_hours, 0)
         self.assertEqual(self.task.duration_minutes, 45)
+
+    def test_waiting_row_shows_duration(self):
+        task = WaitingTask.objects.create(
+            project='P', reason='R', order=99,
+            duration_hours=2, duration_minutes=45,
+        )
+        response = self.client.get(reverse('waiting_row', args=[task.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '2ч')
+        self.assertContains(response, '45м')
