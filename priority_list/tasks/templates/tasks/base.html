@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PrioList{% endblock %}</title>
+    <script>
+        (function () {
+            const t = localStorage.getItem('theme');
+            if (t === 'light') document.documentElement.dataset.theme = 'light';
+        })();
+    </script>
     <link rel="stylesheet" href="{% static 'tasks/style.css' %}">
     <script src="https://unpkg.com/htmx.org@2.0.3" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
@@ -20,6 +26,49 @@
         function getCsrfToken() {
             return document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
         }
+
+        const PROJECT_COLOURS_DARK  = ['#2563eb','#0ea5e9','#6366f1','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899'];
+        const PROJECT_COLOURS_LIGHT = ['#2563eb','#0ea5e9','#6366f1','#7c3aed','#059669','#d97706','#dc2626','#db2777'];
+
+        function projectColour(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) & 0xffff;
+            const palette = document.documentElement.dataset.theme === 'light'
+                ? PROJECT_COLOURS_LIGHT : PROJECT_COLOURS_DARK;
+            return palette[hash % palette.length];
+        }
+
+        function applyProjectColours() {
+            document.querySelectorAll('.task-card[data-project]').forEach(function (card) {
+                const colour = projectColour(card.dataset.project);
+                card.style.borderLeftColor = colour;
+                const nameEl = card.querySelector('.project-name');
+                if (nameEl) nameEl.style.color = colour;
+            });
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const goingLight = html.dataset.theme !== 'light';
+            if (goingLight) {
+                html.dataset.theme = 'light';
+                localStorage.setItem('theme', 'light');
+            } else {
+                delete html.dataset.theme;
+                localStorage.setItem('theme', 'dark');
+            }
+            const btn = document.getElementById('theme-btn');
+            if (btn) btn.textContent = html.dataset.theme === 'light' ? '🌙 Тёмная' : '☀ Светлая';
+            applyProjectColours();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('theme-btn');
+            if (btn) btn.textContent = document.documentElement.dataset.theme === 'light' ? '🌙 Тёмная' : '☀ Светлая';
+            applyProjectColours();
+        });
+
+        document.addEventListener('htmx:afterSwap', applyProjectColours);
     </script>
 </body>
 </html>

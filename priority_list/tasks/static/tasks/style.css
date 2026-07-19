@@ -1,128 +1,217 @@
 *, *::before, *::after { box-sizing: border-box; }
 
+:root {
+    --bg: #0f1117;
+    --card: #1e293b;
+    --card-dim: #1a1f2a;
+    --text: #e2e8f0;
+    --text-muted: #475569;
+    --border: #334155;
+    --btn-primary-bg: #2563eb;
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: #1e293b;
+    --btn-secondary-text: #94a3b8;
+    --btn-secondary-border: #334155;
+    --marker-color: #ef4444;
+}
+
+[data-theme="light"] {
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --card-dim: #f9fafb;
+    --text: #111827;
+    --text-muted: #9ca3af;
+    --border: #e5e7eb;
+    --btn-primary-bg: #111827;
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: #ffffff;
+    --btn-secondary-text: #6b7280;
+    --btn-secondary-border: #e5e7eb;
+    --marker-color: #ef4444;
+}
+
 body {
     margin: 0;
     padding: 20px;
-    background: #ac7e59;
-    font-family: Arial, sans-serif;
+    background: var(--bg);
+    font-family: Inter, Arial, sans-serif;
     min-height: 100vh;
+    color: var(--text);
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
+/* Toolbar */
 .toolbar {
     display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
+    gap: 8px;
+    margin-bottom: 20px;
+    align-items: center;
 }
 
 .toolbar button,
 .toolbar a.btn {
-    padding: 8px 18px;
-    background: #473424;
-    color: #ddd;
+    padding: 6px 16px;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
 }
 
+.toolbar .btn-secondary {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--btn-secondary-border);
+}
+
 .toolbar button:hover,
 .toolbar a.btn:hover {
-    background: #5a4030;
+    opacity: 0.85;
 }
 
-.task-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 10px;
+.theme-toggle {
+    margin-left: auto;
 }
 
-.task-table thead th {
-    background: #473424;
-    color: #ddd;
-    padding: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
-    text-align: left;
+/* Column header row */
+.task-list-header {
+    display: grid;
+    grid-template-columns: 20% 55% 15% 10%;
+    padding: 0 14px 8px 18px;
 }
 
-.task-table thead th:first-child { border-radius: 10px 0 0 10px; }
-.task-table thead th:last-child  { border-radius: 0 10px 10px 0; }
+.task-list-header span {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-.task-table tbody td {
-    background: #705138;
-    color: #ddd;
+/* Task list container */
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Task card */
+.task-card {
+    display: grid;
+    grid-template-columns: 20% 55% 15% 10%;
+    align-items: center;
+    background: var(--card);
+    border-radius: 14px;
     padding: 10px 14px;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
+    border-left: 4px solid var(--border);
+    cursor: grab;
+    transition: opacity 0.2s;
 }
 
-.task-table tbody td:first-child {
-    width: 20%;
-    border-radius: 20px 0 0 20px;
+.task-card:active { cursor: grabbing; }
+
+.task-card.task-dimmed {
+    opacity: 0.5;
 }
 
-.task-table tbody td:nth-child(2) {
-    width: 55%;
-    min-height: 60px;
+.task-card.task-dimmed .actions button {
+    pointer-events: none;
 }
 
-.task-table tbody td.duration {
-    width: 15%;
-    text-align: center;
+.project-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2563eb;
 }
 
-.task-table tbody td.actions {
-    width: 10%;
-    text-align: center;
-    background: #8d6646;
-    border-radius: 20px;
+.task-card .description {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 600;
 }
 
-.task-table tbody tr { cursor: grab; }
-.task-table tbody tr:active { cursor: grabbing; }
-
-textarea {
-    width: 100%;
-    background: transparent;
-    color: #ddd;
-    border: none;
-    outline: none;
-    font-family: Arial, sans-serif;
-    font-size: 18px;
-    font-weight: bold;
-    resize: none;
-    min-height: 40px;
+.task-card .duration-cell {
+    font-size: 13px;
+    color: var(--text-muted);
 }
 
-button {
+.task-card .actions {
+    text-align: right;
+}
+
+.task-card .actions button {
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: 18px;
-    padding: 4px 8px;
+    font-size: 16px;
+    padding: 4px 6px;
     border-radius: 4px;
+    color: var(--text-muted);
 }
 
-button:hover  { background: rgba(255, 255, 255, 0.15); }
-button:focus  { outline: 2px solid #8bc5a5; }
+.task-card .actions button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text);
+}
 
+[data-theme="light"] .task-card .actions button:hover {
+    background: rgba(0, 0, 0, 0.07);
+}
+
+/* Textarea inside card */
+textarea {
+    width: 100%;
+    background: transparent;
+    color: var(--text);
+    border: none;
+    outline: none;
+    font-family: Inter, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    resize: none;
+    min-height: 36px;
+}
+
+/* Number inputs */
 input[type="number"] {
     background: transparent;
-    color: #ddd;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text);
+    border: 1px solid var(--border);
     border-radius: 4px;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 13px;
+    font-weight: 600;
     padding: 2px 4px;
     width: 3em;
+}
+
+/* Week marker */
+.week-marker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    pointer-events: none;
+}
+
+.week-marker-line {
+    flex: 1;
+    height: 1px;
+    background: var(--marker-color);
+    opacity: 0.7;
+}
+
+.week-marker-label {
+    color: var(--marker-color);
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
 }
