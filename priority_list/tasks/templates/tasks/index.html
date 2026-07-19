@@ -4,40 +4,78 @@
 <div class="container">
     <div class="toolbar">
         <button hx-get="{% url 'task_add_form' %}"
-                hx-target="#task-tbody"
+                hx-target="#task-list"
                 hx-swap="beforeend">+ Добавить</button>
-        <a href="{% url 'waiting_index' %}" class="btn">Ожидание</a>
+        <a href="{% url 'waiting_index' %}" class="btn btn-secondary">Ожидание</a>
+        <button id="theme-btn" class="btn-secondary theme-toggle" onclick="toggleTheme()">☀ Светлая</button>
     </div>
-    <table class="task-table">
-        <thead>
-            <tr>
-                <th>Проект</th>
-                <th>Описание задачи</th>
-                <th>Время</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="task-tbody">
-            {% for task in tasks %}
-                {% include 'tasks/partials/_task_row.html' %}
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="task-list-header">
+        <span>Проект</span>
+        <span>Описание задачи</span>
+        <span>Время</span>
+        <span></span>
+    </div>
+    <div class="task-list" id="task-list">
+        {% for task in tasks %}
+            {% include 'tasks/partials/_task_row.html' %}
+        {% endfor %}
+    </div>
 </div>
 <script>
-    Sortable.create(document.getElementById('task-tbody'), {
+    const WEEK_HOURS = 40;
+
+    function updateWeekMarker() {
+        const existing = document.querySelector('.week-marker');
+        if (existing) existing.remove();
+        document.querySelectorAll('.task-card.task-dimmed').forEach(function (c) {
+            c.classList.remove('task-dimmed');
+        });
+
+        const cards = Array.from(document.querySelectorAll('#task-list .task-card[data-id]'));
+        let total = 0;
+        let marked = false;
+
+        for (const card of cards) {
+            if (marked) { card.classList.add('task-dimmed'); continue; }
+            const h = parseInt(card.dataset.hours || '0', 10);
+            const m = parseInt(card.dataset.minutes || '0', 10);
+            if (total + h + m / 60 > WEEK_HOURS) {
+                const marker = document.createElement('div');
+                marker.className = 'week-marker';
+                marker.innerHTML =
+                    '<div class="week-marker-line"></div>' +
+                    '<span class="week-marker-label">⏱ 40ч — конец недели</span>' +
+                    '<div class="week-marker-line"></div>';
+                card.parentNode.insertBefore(marker, card);
+                card.classList.add('task-dimmed');
+                marked = true;
+            } else {
+                total += h + m / 60;
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        updateWeekMarker();
+    });
+
+    document.addEventListener('htmx:afterSwap', function () {
+        updateWeekMarker();
+    });
+
+    Sortable.create(document.getElementById('task-list'), {
         animation: 150,
         filter: 'input, textarea, button',
         preventOnFilter: false,
         onEnd: function () {
-            const rows = document.querySelectorAll('#task-tbody tr[data-id]');
+            const cards = document.querySelectorAll('#task-list .task-card[data-id]');
             const formData = new FormData();
-            rows.forEach(row => formData.append('ids', row.dataset.id));
+            cards.forEach(function (card) { formData.append('ids', card.dataset.id); });
             fetch("{% url 'task_reorder' %}", {
                 method: 'POST',
                 headers: {'X-CSRFToken': getCsrfToken()},
                 body: formData,
-            }).catch(console.error);
+            }).then(function () { updateWeekMarker(); }).catch(console.error);
         },
     });
 </script>
