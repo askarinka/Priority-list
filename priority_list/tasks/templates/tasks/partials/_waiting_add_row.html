@@ -1,15 +1,15 @@
-<tr id="waiting-add-row">
-    <td><textarea name="project" placeholder="Проект"></textarea></td>
-    <td><textarea name="reason" placeholder="Причина ожидания"></textarea></td>
-    <td class="duration">
-        <input type="number" name="duration_hours" value="0" min="0" style="width:3em"> ч
-        <input type="number" name="duration_minutes" value="0" min="0" style="width:3em"> м
-    </td>
-    <td class="actions">
+<div class="task-card" id="waiting-add-row" data-hours="0" data-minutes="0">
+    <div><textarea name="project" placeholder="Проект"></textarea></div>
+    <div><textarea name="reason" placeholder="Причина ожидания"></textarea></div>
+    <div class="duration-cell">
+        <input type="number" name="duration_hours" value="0" min="0"> ч
+        <input type="number" name="duration_minutes" value="0" min="0"> м
+    </div>
+    <div class="actions">
         <button hx-post="{% url 'waiting_add' %}"
                 hx-include="#waiting-add-row"
                 hx-target="#waiting-add-row"
                 hx-swap="outerHTML">✓</button>
-        <button type="button" onclick="this.closest('tr').remove()">✗</button>
-    </td>
-</tr>
+        <button type="button" onclick="this.closest('.task-card').remove()">✗</button>
+    </div>
+</div>

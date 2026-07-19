@@ -1,14 +1,14 @@
-<tr data-id="{{ task.id }}">
-    <td>{{ task.project }}</td>
-    <td>{{ task.reason }}</td>
-    <td class="duration">{{ task.duration_hours }}ч {{ task.duration_minutes }}м</td>
-    <td class="actions">
+<div class="task-card" data-id="{{ task.id }}" data-project="{{ task.project }}" data-hours="{{ task.duration_hours }}" data-minutes="{{ task.duration_minutes }}">
+    <span class="project-name">{{ task.project }}</span>
+    <span class="description">{{ task.reason }}</span>
+    <span class="duration-cell">{{ task.duration_hours }}ч {{ task.duration_minutes }}м</span>
+    <div class="actions">
         <button hx-post="{% url 'waiting_delete' task.id %}"
-                hx-target="closest tr"
+                hx-target="closest .task-card"
                 hx-swap="outerHTML"
                 hx-confirm="Удалить из ожидания?">✓</button>
         <button hx-get="{% url 'waiting_edit_form' task.id %}"
-                hx-target="closest tr"
+                hx-target="closest .task-card"
                 hx-swap="outerHTML">✎</button>
-    </td>
-</tr>
+    </div>
+</div>
