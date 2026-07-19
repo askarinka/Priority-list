@@ -16,6 +16,16 @@ class TaskModelTest(TestCase):
         self.assertIsNone(task.external_id)
         self.assertIsNone(task.tracker_url)
 
+    def test_task_default_duration_is_zero(self):
+        task = Task.objects.create(project='P', description='D', order=0)
+        self.assertEqual(task.duration_hours, 0)
+        self.assertEqual(task.duration_minutes, 0)
+
+    def test_waiting_task_default_duration_is_zero(self):
+        task = WaitingTask.objects.create(project='P', reason='R', order=0)
+        self.assertEqual(task.duration_hours, 0)
+        self.assertEqual(task.duration_minutes, 0)
+
 
 class TaskViewTest(TestCase):
     def setUp(self):
@@ -75,6 +85,26 @@ class TaskViewTest(TestCase):
         self.task.refresh_from_db()
         self.assertEqual(t2.order, 0)
         self.assertEqual(self.task.order, 1)
+
+    def test_add_task_saves_duration(self):
+        response = self.client.post(
+            reverse('task_add'),
+            {'project': 'P2', 'description': 'D2', 'duration_hours': '2', 'duration_minutes': '30'},
+        )
+        self.assertEqual(response.status_code, 200)
+        task = Task.objects.latest('id')
+        self.assertEqual(task.duration_hours, 2)
+        self.assertEqual(task.duration_minutes, 30)
+
+    def test_edit_task_saves_duration(self):
+        response = self.client.post(
+            reverse('task_edit', args=[self.task.pk]),
+            {'project': 'P1', 'description': 'D1', 'duration_hours': '1', 'duration_minutes': '45'},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.task.refresh_from_db()
+        self.assertEqual(self.task.duration_hours, 1)
+        self.assertEqual(self.task.duration_minutes, 45)
 
 
 class WaitingTaskViewTest(TestCase):
@@ -137,3 +167,23 @@ class WaitingTaskViewTest(TestCase):
         self.task.refresh_from_db()
         self.assertEqual(t2.order, 0)
         self.assertEqual(self.task.order, 1)
+
+    def test_add_waiting_task_saves_duration(self):
+        response = self.client.post(
+            reverse('waiting_add'),
+            {'project': 'P2', 'reason': 'R2', 'duration_hours': '3', 'duration_minutes': '15'},
+        )
+        self.assertEqual(response.status_code, 200)
+        task = WaitingTask.objects.latest('id')
+        self.assertEqual(task.duration_hours, 3)
+        self.assertEqual(task.duration_minutes, 15)
+
+    def test_edit_waiting_task_saves_duration(self):
+        response = self.client.post(
+            reverse('waiting_edit', args=[self.task.pk]),
+            {'project': 'P1', 'reason': 'R1', 'duration_hours': '0', 'duration_minutes': '45'},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.task.refresh_from_db()
+        self.assertEqual(self.task.duration_hours, 0)
+        self.assertEqual(self.task.duration_minutes, 45)

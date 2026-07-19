@@ -25,6 +25,8 @@ def task_add(request):
         project=request.POST.get('project', '').strip(),
         description=request.POST.get('description', '').strip(),
         order=max_order + 1,
+        duration_hours=int(request.POST.get('duration_hours', 0) or 0),
+        duration_minutes=int(request.POST.get('duration_minutes', 0) or 0),
     )
     return render(request, 'tasks/partials/_task_row.html', {'task': task})
 
@@ -44,6 +46,8 @@ def task_edit(request, pk):
     task = get_object_or_404(Task, pk=pk)
     task.project = request.POST.get('project', task.project).strip()
     task.description = request.POST.get('description', task.description).strip()
+    task.duration_hours = int(request.POST.get('duration_hours', task.duration_hours) or 0)
+    task.duration_minutes = int(request.POST.get('duration_minutes', task.duration_minutes) or 0)
     task.save()
     return render(request, 'tasks/partials/_task_row.html', {'task': task})
 
@@ -79,6 +83,8 @@ def waiting_add(request):
         project=request.POST.get('project', '').strip(),
         reason=request.POST.get('reason', '').strip(),
         order=max_order + 1,
+        duration_hours=int(request.POST.get('duration_hours', 0) or 0),
+        duration_minutes=int(request.POST.get('duration_minutes', 0) or 0),
     )
     return render(request, 'tasks/partials/_waiting_row.html', {'task': task})
 
@@ -98,6 +104,8 @@ def waiting_edit(request, pk):
     task = get_object_or_404(WaitingTask, pk=pk)
     task.project = request.POST.get('project', task.project).strip()
     task.reason = request.POST.get('reason', task.reason).strip()
+    task.duration_hours = int(request.POST.get('duration_hours', task.duration_hours) or 0)
+    task.duration_minutes = int(request.POST.get('duration_minutes', task.duration_minutes) or 0)
     task.save()
     return render(request, 'tasks/partials/_waiting_row.html', {'task': task})
 
